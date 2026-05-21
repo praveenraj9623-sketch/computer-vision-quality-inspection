@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+data/*
+!data/README.md
+models/*.h5
+models/*.keras
+models/*.pkl
+outputs/*
+!outputs/README.md
