@@ -1,39 +1,80 @@
 # Computer Vision Product Quality Inspection System
 
-This project detects defective and non-defective casting product images using deep learning.
+Live App: https://computer-vision-quality-inspection-qkv9autqvpnjyoz5tzn8n3.streamlit.app/
 
-It is designed for a manufacturing quality inspection use case and demonstrates a complete computer vision workflow using TensorFlow, Keras, CNN, transfer learning, model evaluation, Grad-CAM explainability, and Streamlit deployment.
+A computer vision-based quality inspection system that classifies casting product images as defective or non-defective using deep learning. The project uses TensorFlow/Keras, MobileNetV2 transfer learning, model evaluation metrics, Grad-CAM explainability, and a Streamlit web application for real-time image prediction.
 
 ---
 
 ## Business Problem
 
-In manufacturing, manual quality inspection can be slow and inconsistent. Defective casting products may be missed due to human fatigue or visual similarity between good and defective parts.
+In manufacturing, visual quality inspection is often performed manually. This can be time-consuming and may lead to inconsistent inspection results due to human fatigue or visual similarity between defective and non-defective products.
 
-This project helps automate initial defect screening by classifying product images as:
+This project helps automate the initial inspection process by classifying casting product images into:
 
 - Defective
 - Non-defective / OK
 
-The model output can support quality teams by flagging products that need human review.
+The system is designed as a decision-support tool for manufacturing quality teams.
+
+---
+
+## Live Demo
+
+Streamlit Application:
+
+https://computer-vision-quality-inspection-qkv9autqvpnjyoz5tzn8n3.streamlit.app/
+
+---
+
+## Key Features
+
+- Upload casting product images
+- Predict whether the product is defective or non-defective
+- Show model confidence score
+- Display probability of defective and OK classes
+- Generate Grad-CAM visual explanation
+- Show model details and class information
+- Display evaluation metrics
+- Display confusion matrix
+- Streamlit-based interactive UI
+
+---
+
+## Tech Stack
+
+| Category | Tools / Libraries |
+|---|---|
+| Programming Language | Python |
+| Deep Learning | TensorFlow, Keras |
+| Model Architecture | CNN, MobileNetV2 Transfer Learning |
+| Computer Vision | Image preprocessing, Grad-CAM |
+| Data Handling | NumPy, Pandas, Pillow |
+| Evaluation | Scikit-learn |
+| Visualization | Matplotlib |
+| Web App | Streamlit |
+| Deployment | Streamlit Cloud |
 
 ---
 
 ## Dataset
 
-Recommended dataset:
+Dataset used:
 
 **Casting Product Image Data for Quality Inspection**
 
-Kaggle:
+Kaggle dataset link:
+
 https://www.kaggle.com/datasets/ravirajsinh45/real-life-industrial-dataset-of-casting-product
 
-Expected classes:
+The dataset contains casting product images divided into two classes:
 
-- `def_front` = defective product image
-- `ok_front` = non-defective product image
+```text
+def_front  → Defective product images
+ok_front   → Non-defective product images
+```
 
-Expected folder structure:
+Expected dataset folder structure:
 
 ```text
 data/
@@ -47,27 +88,14 @@ data/
             └── ok_front/
 ```
 
----
-
-## Features
-
-- Image upload and real-time defect prediction
-- CNN model training
-- MobileNetV2 transfer learning
-- Data augmentation
-- Model evaluation with Accuracy, Precision, Recall, F1-score, ROC-AUC
-- Confusion matrix
-- Grad-CAM explainability
-- Business recommendation based on prediction confidence
-- Streamlit dashboard
-- Safe fallback messages if model or dataset is missing
+Note: The dataset is not included in this repository because of file size. Download it from Kaggle and place it inside the `data/` folder.
 
 ---
 
 ## Project Structure
 
 ```text
-cv_quality_inspection_system/
+computer-vision-quality-inspection/
 │
 ├── app.py
 ├── train.py
@@ -85,51 +113,51 @@ cv_quality_inspection_system/
 │   ├── reporting.py
 │   └── visualization.py
 │
-├── data/
 ├── models/
+│   └── quality_inspection_model.keras
+│
 ├── outputs/
+│   ├── evaluation_metrics.json
+│   ├── evaluation_classification_report.csv
+│   └── confusion_matrix.png
+│
 ├── screenshots/
-└── notebooks/
+└── data/
 ```
 
 ---
 
-## Installation
+## Model Used
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
+The main model used in this project is **MobileNetV2 Transfer Learning**.
 
----
+MobileNetV2 was selected because:
 
-## Run Streamlit App
+- It is lightweight compared to large CNN architectures
+- It is suitable for image classification tasks
+- It uses pretrained ImageNet weights
+- It can learn strong visual features with less training time
+- It is practical for deployment in a Streamlit application
 
-```bash
-python -m streamlit run app.py
-```
-
-If no trained model is available, the app will still open and show setup guidance.
+The project also includes a baseline CNN option for comparison and experimentation.
 
 ---
 
-## Train Model
+## Model Training
 
-After downloading the Kaggle dataset and placing it inside the `data/` folder:
+To train the model locally:
 
 ```bash
 python train.py --dataset_dir data/casting_data/casting_data --model_type mobilenet --epochs 10
 ```
 
-For a lighter baseline CNN:
+To train the baseline CNN model:
 
 ```bash
 python train.py --dataset_dir data/casting_data/casting_data --model_type cnn --epochs 10
 ```
 
-The trained model will be saved to:
+The trained model is saved as:
 
 ```text
 models/quality_inspection_model.keras
@@ -137,59 +165,247 @@ models/quality_inspection_model.keras
 
 ---
 
-## Evaluate Model
+## Model Evaluation
+
+To evaluate the trained model:
 
 ```bash
 python evaluate.py --dataset_dir data/casting_data/casting_data --model_path models/quality_inspection_model.keras
 ```
 
-Evaluation outputs include Accuracy, Precision, Recall, F1-score, ROC-AUC, and confusion matrix.
+Evaluation outputs are saved inside the `outputs/` folder.
 
 ---
 
-## JD Skill Coverage
+## Model Performance
 
-This project covers:
+The trained MobileNetV2 model achieved the following results:
+
+| Metric | Score |
+|---|---:|
+| Accuracy | 0.9888 |
+| Precision | 0.9885 |
+| Recall | 0.9809 |
+| F1-score | 0.9847 |
+| ROC-AUC | 0.9991 |
+
+These results show that the model performs strongly in separating defective and non-defective casting product images.
+
+---
+
+## Evaluation Metrics Explained
+
+| Metric | Meaning |
+|---|---|
+| Accuracy | Overall percentage of correct predictions |
+| Precision | Out of predicted defective/OK cases, how many were correct |
+| Recall | How many actual cases were correctly identified |
+| F1-score | Balanced score between precision and recall |
+| ROC-AUC | Measures how well the model separates both classes |
+
+---
+
+## Grad-CAM Explainability
+
+Grad-CAM is used to visually explain the model prediction.
+
+It highlights the image regions that influenced the model’s decision. This helps users understand whether the model is focusing on meaningful product areas before making a prediction.
+
+This is important because computer vision systems should not only make predictions but also provide some level of interpretability.
+
+---
+
+## Streamlit Application Pages
+
+### 1. Overview
+
+Explains the business problem, workflow, use case, model type, and application value.
+
+### 2. Image Prediction
+
+Allows users to upload a casting product image and receive:
+
+- Prediction label
+- Confidence score
+- Probability defective
+- Probability OK
+- Recommended action
+- Grad-CAM heatmap
+
+### 3. Model Details
+
+Displays:
+
+- Input image size
+- Number of output classes
+- Class labels
+- Model architecture details
+- Training command
+- Evaluation command
+- Model file status
+
+### 4. Evaluation Results
+
+Displays:
+
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- ROC-AUC
+- Classification report
+- Confusion matrix
+- Metric interpretation
+
+---
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/praveenraj9623-sketch/computer-vision-quality-inspection.git
+cd computer-vision-quality-inspection
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### Mac / Linux
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+---
+
+## Run Locally
+
+Start the Streamlit app:
+
+```bash
+python -m streamlit run app.py
+```
+
+Then open the local URL shown in the terminal.
+
+---
+
+## How to Use the App
+
+1. Open the Streamlit application
+2. Go to the **Image Prediction** page
+3. Upload a casting product image
+4. View the prediction result
+5. Check confidence score and probability values
+6. View the Grad-CAM explanation
+7. Use the result as decision support for quality inspection
+
+---
+
+## Deployment
+
+This project is deployed using Streamlit Cloud.
+
+Live app:
+
+https://computer-vision-quality-inspection-qkv9autqvpnjyoz5tzn8n3.streamlit.app/
+
+Deployment requirements:
+
+```text
+streamlit
+tensorflow
+numpy
+pandas
+pillow
+scikit-learn
+matplotlib
+plotly
+opencv-python-headless
+```
+
+The trained model file must be available in:
+
+```text
+models/quality_inspection_model.keras
+```
+
+---
+
+## Skills Demonstrated
 
 - Computer Vision
 - Deep Learning
-- CNN
-- Neural Networks
 - TensorFlow
 - Keras
-- Image Classification
+- CNN
+- MobileNetV2 Transfer Learning
+- Binary Image Classification
+- Image Preprocessing
+- Data Augmentation
 - Model Training
-- Model Testing
-- Precision, Recall, F1-score, ROC-AUC
-- Explainable AI using Grad-CAM
-- Streamlit AI application
-- Manufacturing / industrial quality inspection use case
-
----
-
-## Resume Description
-
-Built a computer vision product quality inspection system to classify casting product images as defective or non-defective. Implemented image preprocessing, data augmentation, CNN baseline model, MobileNetV2 transfer learning, model evaluation using accuracy, precision, recall, F1-score and ROC-AUC, Grad-CAM explainability, and a Streamlit prediction dashboard for real-time quality inspection support.
+- Model Evaluation
+- Accuracy, Precision, Recall, F1-score, ROC-AUC
+- Grad-CAM Explainability
+- Streamlit App Development
+- Streamlit Cloud Deployment
+- Manufacturing Quality Inspection Use Case
 
 ---
 
 ## Limitations
 
-- The project works best with clear product images similar to the training dataset.
-- The model is a decision-support tool, not a complete replacement for human quality inspectors.
-- Real production deployment would need camera integration, monitoring, retraining pipeline, threshold calibration, and human review workflow.
-
+- The model works best on images similar to the training dataset.
+- It is intended as a decision-support tool, not a complete replacement for human inspection.
+- Performance may reduce on images with different lighting, angles, backgrounds, or product types.
+- Real production deployment would require camera integration, threshold calibration, monitoring, retraining, and human review workflow.
 
 ---
 
-## Screenshots to Add
+## Future Improvements
 
-After training the model locally, add screenshots to the `screenshots/` folder:
+- Add more product categories
+- Add real-time camera input
+- Add batch image prediction
+- Add model monitoring dashboard
+- Add threshold tuning for quality control teams
+- Add defect localization with object detection or segmentation
+- Deploy using Docker or cloud infrastructure
+- Add user authentication and prediction history
 
-- `prediction_result.png`
-- `gradcam_heatmap.png`
-- `model_setup.png`
-- `evaluation_metrics.png`
+---
 
-These screenshots make the GitHub project easier to understand during recruiter screening.
-"# computer-vision-quality-inspection" 
+## Resume Description
+
+Built a computer vision quality inspection system using TensorFlow/Keras and MobileNetV2 transfer learning to classify casting product images as defective or non-defective. Implemented image preprocessing, data augmentation, model evaluation using Accuracy, Precision, Recall, F1-score and ROC-AUC, Grad-CAM explainability, and a Streamlit web application for real-time prediction and visual model interpretation.
+
+---
+
+## Author
+
+**Praveen Raj A**
+
+LinkedIn:  
+https://www.linkedin.com/in/praveen-raj-a-b05abb2a3/
+
+GitHub:  
+https://github.com/praveenraj9623-sketch
