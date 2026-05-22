@@ -16,6 +16,19 @@ st.set_page_config(
     layout="wide",
 )
 
+
+def show_image(image_obj, caption=None, width=None):
+    """
+    Streamlit Cloud-safe image display helper.
+    Some Streamlit Cloud versions do not support use_container_width for st.image().
+    use_column_width works safely on older Streamlit versions.
+    """
+    if width is not None:
+        st.image(image_obj, caption=caption, width=width)
+    else:
+        st.image(image_obj, caption=caption, use_column_width=True)
+
+
 st.markdown(
     """
     <style>
@@ -188,13 +201,13 @@ elif page == "Image Prediction":
         )
 
         if uploaded_image is not None:
-            image = Image.open(uploaded_image)
+            image = Image.open(uploaded_image).convert("RGB")
 
             left_col, right_col = st.columns([1, 1])
 
             with left_col:
                 st.subheader("Uploaded Image")
-                st.image(image, use_container_width=True)
+                show_image(image)
 
             result = predict_image(
                 model=model,
@@ -219,10 +232,12 @@ elif page == "Image Prediction":
                     )
 
                 st.metric("Confidence", f"{result['confidence'] * 100:.2f}%")
+
                 st.metric(
                     "Probability Defective",
                     f"{result['probability_defective'] * 100:.2f}%",
                 )
+
                 st.metric(
                     "Probability OK",
                     f"{result['probability_ok'] * 100:.2f}%",
@@ -242,10 +257,10 @@ elif page == "Image Prediction":
                     st.warning(error)
                 else:
                     overlay = overlay_heatmap(image, heatmap)
-                    st.image(
+
+                    show_image(
                         overlay,
                         caption="Grad-CAM heatmap showing model attention area",
-                        use_container_width=True,
                     )
 
 
@@ -367,6 +382,7 @@ elif page == "Evaluation Results":
 
     else:
         st.warning("Evaluation metrics file not found.")
+
         st.code(
             "python evaluate.py --dataset_dir data/casting_data/casting_data --model_path models/quality_inspection_model.keras"
         )
@@ -378,7 +394,7 @@ elif page == "Evaluation Results":
 
     if confusion_matrix_path.exists():
         st.subheader("Confusion Matrix")
-        st.image(str(confusion_matrix_path), use_container_width=False)
+        show_image(str(confusion_matrix_path), width=500)
 
     st.subheader("Interpretation")
 
